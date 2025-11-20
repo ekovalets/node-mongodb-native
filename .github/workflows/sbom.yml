@@ -1,0 +1,105 @@
+name: Post-Merge SBOM Update
+
+on:
+  pull_request:
+    types: [closed]
+    paths:
+      - 'package.json'
+      - 'package-lock.json'
+  workflow_dispatch:
+    inputs:
+      debug:
+        description: 'Enable debug mode'
+        required: false
+        default: 'false'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sbom:
+    name: Generate SBOM and Create PR
+    runs-on: ubuntu-latest
+    
+    if: github.event.pull_request.merged == true || github.event_name == 'workflow_dispatch'
+    
+    concurrency:
+      group: sbom-${{ github.ref }}
+      cancel-in-progress: false
+
+    steps:
+      - name: Checkout repository (Base Branch)
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.base.ref || github.ref }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Determine Node.js version
+        id: versions
+        run: |
+          if [ -f ".nvmrc" ]; then
+            NODE_VERSION=$(cat .nvmrc | tr -d '[:space:]')
+          elif [ -f "package.json" ]; then
+            NODE_VERSION=$(jq -r '.engines.node // "20"' package.json | sed 's/[^0-9.]//g')
+          else
+            NODE_VERSION="20"
+          fi
+          
+          echo "node-version=${NODE_VERSION}" >> $GITHUB_OUTPUT
+          echo "Using Node.js version: ${NODE_VERSION}"
+
+      - name: Setup Node.js environment
+        uses: ./.github/actions/setup
+        with:
+          node-version: ${{ steps.versions.outputs.node-version }}
+          working-directory: '.'
+          
+      - name: Generate SBOM
+        uses: ./.github/actions/sbom
+        with:
+          working-directory: '.'
+          output-file: 'sbom.json'
+
+      - name: Check for Changes in sbom.json
+        id: git_status
+        run: |
+          if git diff --exit-code sbom.json ; then
+            echo "HAS_CHANGES=false" >> $GITHUB_OUTPUT
+          else
+            echo "HAS_CHANGES=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create Pull Request
+        if: steps.git_status.outputs.HAS_CHANGES == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: 'chore: update SBOM after dependency changes'
+          branch: auto-update-sbom-${{ github.run_id }}
+          delete-branch: true
+          title: 'chore: Update SBOM'
+          body: |
+            ## Automated SBOM Update
+            
+            This PR was automatically generated because package files changed.
+            
+            ### Environment
+            - Node.js version: ${{ steps.versions.outputs.node-version }}
+            
+            ### Changes
+            - Updated `sbom.json` to reflect current dependencies
+            
+            ### Verification
+            The SBOM was generated using CycloneDX NPM.
+
+            ### Triggered by
+            - Commit: ${{ github.sha }}
+            - Workflow run: ${{ github.run_id }}
+            
+            ---
+            _This PR was created automatically by the [SBOM workflow](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})_
+          labels: |
+            sbom
+            automated
+            dependencies

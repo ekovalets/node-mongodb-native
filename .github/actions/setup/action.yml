@@ -1,0 +1,41 @@
+name: Setup
+description: Sets up the build environment for Node.js MongoDB driver
+inputs:
+  node-version:
+    description: "Node.js version to install"
+    required: true
+  mongodb-version:
+    description: "MongoDB server version to install"
+    required: false
+    default: ""
+  working-directory:
+    description: "The directory where package.json is located"
+    required: false
+    default: "."
+
+runs:
+  using: composite
+  steps:
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: 'npm'
+        cache-dependency-path: ${{ inputs.working-directory }}/package-lock.json
+
+    - name: Show Node.js information
+      run: |
+        node --version
+        npm --version
+      shell: bash
+
+    - name: Install dependencies
+      run: npm ci
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+
+    - name: Setup MongoDB
+      if: inputs.mongodb-version != ''
+      uses: supercharge/mongodb-github-action@1.10.0
+      with:
+        mongodb-version: ${{ inputs.mongodb-version }}
