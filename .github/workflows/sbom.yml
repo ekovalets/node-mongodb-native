@@ -55,7 +55,7 @@ jobs:
         uses: ./.github/actions/setup-sbom
 
       - name: Generate SBOM
-        uses: ./.github/actions/auxiliry/sbom-update
+        uses: ./.github/actions/sbom-update
         with:
           working-directory: '.'
           output-file: 'sbom.json'
