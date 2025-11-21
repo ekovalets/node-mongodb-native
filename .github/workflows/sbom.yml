@@ -57,9 +57,7 @@ jobs:
       - name: Generate SBOM
         uses: ./.github/actions/sbom-update
         with:
-          working-directory: '.'
           output-file: 'sbom.json'
-          output-format: 'json'
 
       - name: Check for Changes in sbom.json
         id: git_status
