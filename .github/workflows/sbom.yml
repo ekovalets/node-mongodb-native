@@ -52,7 +52,7 @@ jobs:
           echo "package-lock.json generated with resolved versions"
 
       - name: Setup SBOM environment
-        uses: ./.github/actions/setup-for-sbom
+        uses: ./.github/actions/setup-sbom
 
       - name: Generate SBOM
         uses: ./.github/actions/auxiliry/sbom-update
