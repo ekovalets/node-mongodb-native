@@ -1,10 +1,10 @@
 {
   "bomFormat": "CycloneDX",
   "specVersion": "1.6",
-  "serialNumber": "urn:uuid:c7e9e07c-33a3-4cc3-91ac-da1b0e0cc1ae",
+  "serialNumber": "urn:uuid:01e414c8-08ed-469f-9bb5-84c62aac8676",
   "version": 1,
   "metadata": {
-    "timestamp": "2025-11-20T09:05:42Z",
+    "timestamp": "2025-11-21T23:56:23Z",
     "tools": {
       "components": [
         {
@@ -143,6 +143,9 @@
           }
         ],
         "occurrences": [
+          {
+            "location": "lib/cmap/auth/scram.js#4"
+          },
           {
             "location": "src/cmap/auth/scram.ts#1"
           }
@@ -312,6 +315,12 @@
         ],
         "occurrences": [
           {
+            "location": "lib/bson.js#9"
+          },
+          {
+            "location": "lib/bson.js#10"
+          },
+          {
             "location": "src/bson.ts#2"
           },
           {
@@ -372,6 +381,9 @@
           }
         ],
         "occurrences": [
+          {
+            "location": "lib/connection_string.js#7"
+          },
           {
             "location": "src/connection_string.ts#2"
           }
@@ -736,6 +748,9 @@
           }
         ],
         "occurrences": [
+          {
+            "location": "lib/deps.js#53"
+          },
           {
             "location": "src/deps.ts#106"
           }
@@ -13887,6 +13902,9 @@
         ],
         "occurrences": [
           {
+            "location": "lib/deps.js#42"
+          },
+          {
             "location": "src/deps.ts#67"
           }
         ]
@@ -25310,6 +25328,9 @@
         ],
         "occurrences": [
           {
+            "location": "lib/deps.js#65"
+          },
+          {
             "location": "src/deps.ts#128"
           }
         ]
@@ -28386,6 +28407,9 @@
         ],
         "occurrences": [
           {
+            "location": "lib/deps.js#117"
+          },
+          {
             "location": "src/client-side-encryption/auto_encrypter.ts#1"
           },
           {
@@ -28502,6 +28526,9 @@
           }
         ],
         "occurrences": [
+          {
+            "location": "lib/deps.js#77"
+          },
           {
             "location": "src/deps.ts#160"
           }
@@ -29687,6 +29714,9 @@
           }
         ],
         "occurrences": [
+          {
+            "location": "lib/deps.js#89"
+          },
           {
             "location": "src/deps.ts#195"
           }
@@ -34556,6 +34586,9 @@
         ],
         "occurrences": [
           {
+            "location": "lib/cmap/auth/scram.js#4"
+          },
+          {
             "location": "src/cmap/auth/scram.ts#1"
           }
         ]
@@ -34610,6 +34643,12 @@
         ],
         "occurrences": [
           {
+            "location": "lib/bson.js#9"
+          },
+          {
+            "location": "lib/bson.js#10"
+          },
+          {
             "location": "src/bson.ts#2"
           },
           {
@@ -34662,6 +34701,9 @@
           }
         ],
         "occurrences": [
+          {
+            "location": "lib/connection_string.js#7"
+          },
           {
             "location": "src/connection_string.ts#2"
           }
@@ -39431,8 +39473,8 @@
           ]
         }
       },
-      "timestamp": "2025-11-20T09:05:42Z",
-      "text": "This Software Bill-of-Materials (SBOM) document was created on Thursday, November 20, 2025 with cdxgen. The data was captured during the build lifecycle phase. The document describes an application named 'mongodb' with version '7.0.0'. The application also has 1 child modules/components. There are 700 components. The package type in this SBOM is npm with 30 purl namespaces described under components. The components were identified from the source files: package-lock.json, test/lambda/mongodb/package-lock.json."
+      "timestamp": "2025-11-21T23:56:23Z",
+      "text": "This Software Bill-of-Materials (SBOM) document was created on Friday, November 21, 2025 with cdxgen. The data was captured during the build lifecycle phase. The document describes an application named 'mongodb' with version '7.0.0'. The application also has 1 child modules/components. There are 700 components. The package type in this SBOM is npm with 30 purl namespaces described under components. The components were identified from the source files: package-lock.json, test/lambda/mongodb/package-lock.json."
     }
   ]
 }
