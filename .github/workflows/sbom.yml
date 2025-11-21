@@ -12,7 +12,8 @@ on:
         description: 'Enable debug mode'
         required: false
         default: 'false'
-
+env:
+  SBOM_FILE: "sbom.json"
 permissions:
   contents: write
   pull-requests: write
@@ -57,7 +58,7 @@ jobs:
       - name: Generate SBOM
         uses: ./.github/actions/sbom-update
         with:
-          output-file: 'sbom.json'
+          output-file: ${SBOM_FILE}
 
       - name: Check for Changes in sbom.json
         id: git_status
