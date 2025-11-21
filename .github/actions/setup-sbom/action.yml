@@ -1,8 +1,8 @@
-name: Setup Node SBOM
-description: Sets up environment for generating SBOM in Node.js projects
+name: Setup PHP SBOM
+description: Sets up environment for generating SBOM in PHP projects
 inputs:
   working-directory:
-    description: "The directory where package.json is located"
+    description: "The directory where composer.json is located"
     required: false
     default: "."
 

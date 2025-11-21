@@ -35,28 +35,27 @@ jobs:
           ref: ${{ github.event.pull_request.base.ref || github.ref }}
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Determine Node.js version
-        id: versions
-        run: |
-          if [ -f ".nvmrc" ]; then
-            NODE_VERSION=$(cat .nvmrc | tr -d '[:space:]')
-          elif [ -f "package.json" ]; then
-            NODE_VERSION=$(jq -r '.engines.node // "20"' package.json | sed 's/[^0-9.]//g')
-          else
-            NODE_VERSION="20"
-          fi
-          
-          echo "node-version=${NODE_VERSION}" >> $GITHUB_OUTPUT
-          echo "Using Node.js version: ${NODE_VERSION}"
-
-      - name: Setup Node.js environment
-        uses: ./.github/actions/setup
+      - name: Install Node and dependencies
+        uses: mongodb-labs/drivers-github-tools/node/setup@v3
         with:
-          node-version: ${{ steps.versions.outputs.node-version }}
-          working-directory: '.'
-          
+          ignore_install_scripts: false
+
+      - name: Load version and package info
+        uses: mongodb-labs/drivers-github-tools/node/get_version_info@v3
+        with:
+          npm_package_name: mongodb
+
+      - name: Generate/Update package-lock.json
+        run: |
+          echo "Resolving dependencies and generating package-lock.json..."
+          npm install --package-lock-only
+          echo "package-lock.json generated with resolved versions"
+
+      - name: Setup SBOM environment
+        uses: ./.github/actions/setup-for-sbom
+
       - name: Generate SBOM
-        uses: ./.github/actions/sbom
+        uses: ./.github/actions/auxiliry/sbom-update
         with:
           working-directory: '.'
           output-file: 'sbom.json'
@@ -64,10 +63,25 @@ jobs:
       - name: Check for Changes in sbom.json
         id: git_status
         run: |
-          if git diff --exit-code sbom.json ; then
-            echo "HAS_CHANGES=false" >> $GITHUB_OUTPUT
+          # Filter to remove/normalize serialNumber and timestamp fields
+          JQ_NORMALIZER='del(.serialNumber) | del(.metadata.timestamp) | walk(if type == "object" and .timestamp then .timestamp = "TIMESTAMP_NORMALIZED" else . end)'
+          
+          # Check if the base file exists in Git (to prevent errors on first commit)
+          if ! git show HEAD:$SBOM_FILE > /dev/null 2>&1; then
+              echo "HAS_CHANGES=true" >> $GITHUB_OUTPUT
+              exit 0
+          fi
+          
+          # Compare the normalized committed version vs. the normalized current version
+          if diff -q \
+             <(git show HEAD:$SBOM_FILE | jq -r "$JQ_NORMALIZER") \
+             <(cat $SBOM_FILE | jq -r "$JQ_NORMALIZER"); then
+             
+             echo "HAS_CHANGES=false" >> $GITHUB_OUTPUT
+             echo "No changes detected in sbom.json"
           else
-            echo "HAS_CHANGES=true" >> $GITHUB_OUTPUT
+             echo "HAS_CHANGES=true" >> $GITHUB_OUTPUT
+             echo "Changes detected in sbom.json"
           fi
 
       - name: Create Pull Request
