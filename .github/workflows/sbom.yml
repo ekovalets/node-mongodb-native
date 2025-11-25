@@ -2,7 +2,8 @@ name: Post-Merge SBOM Update
 
 on:
   push:
-    branches: [main]
+    branches: 
+      - main
     paths:
       - 'package.json'
       - 'package-lock.json'
