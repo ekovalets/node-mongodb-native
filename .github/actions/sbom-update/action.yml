@@ -14,7 +14,7 @@ runs:
       working-directory: ${{ inputs.working-directory }}
       run: |
         echo "Generating SBOM for 'node' project..."
-        cdxgen -t 'node' --json-pretty -o ${{ inputs.output-file }} .
+        cdxgen -t 'node' --spec-version 1.5 --json-pretty -o ${{ inputs.output-file }} .
 
     - name: Validate SBOM
       shell: bash

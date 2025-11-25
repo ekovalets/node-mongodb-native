@@ -1,17 +1,12 @@
 name: Post-Merge SBOM Update
 
 on:
-  pull_request:
-    types: [closed]
+  push:
+    branches: [main]
     paths:
       - 'package.json'
       - 'package-lock.json'
   workflow_dispatch:
-    inputs:
-      debug:
-        description: 'Enable debug mode'
-        required: false
-        default: 'false'
 env:
   SBOM_FILE: "sbom.json"
 permissions:
@@ -22,8 +17,6 @@ jobs:
   sbom:
     name: Generate SBOM and Create PR
     runs-on: ubuntu-latest
-    
-    if: github.event.pull_request.merged == true || github.event_name == 'workflow_dispatch'
     
     concurrency:
       group: sbom-${{ github.ref }}
